@@ -25,10 +25,22 @@ cd /home/users/ntu/zuyu001/OPENVLA
 ├── CLAUDE.md                        # 本文件，勿删
 ├── README.md                        # 项目介绍（GitHub 展示用）
 ├── .gitignore                       # 自动生成，勿改
+├── interview_prep.md                # 面试准备（已 gitignore，不上传）
 │
 ├── inference/
 │   ├── run_inference.py             # 单步推理入口，当前延迟 ~320ms
 │   └── yolo_preprocess.py           # YOLOv8 前置感知模块
+│
+├── training/
+│   ├── lora_finetune.py             # LoRA 微调脚本
+│   ├── dpo_align.py                 # DPO 偏好对齐脚本
+│   ├── rlvr_train.py                # RLVR 强化学习训练
+│   └── data_prepare.py             # 数据预处理与格式转换
+│
+├── optimization/
+│   ├── quantize_int8.py             # INT8 量化脚本
+│   ├── pruning.py                   # 结构化剪枝
+│   └── export_onnx.py              # ONNX 导出 + TensorRT
 │
 ├── eval/
 │   └── libero_eval.py               # LIBERO benchmark 评估脚本
@@ -46,7 +58,7 @@ cd /home/users/ntu/zuyu001/OPENVLA
 
 ---
 
-## 性能基线（已验证，只追加不覆盖）
+## 文献参考基线（来源：OpenVLA 原论文，尚未本地复现）
 
 | 指标 | 数值 | 备注 |
 |------|------|------|
@@ -66,12 +78,31 @@ cd /home/users/ntu/zuyu001/OPENVLA
 
 ---
 
-## 下一步任务
+## 下一步任务（按岗位要求分三条主线）
 
-- [ ] LoRA 微调（指令鲁棒性）
-- [ ] INT8 量化推理加速测试
+### 主线一：指令微调与对齐（SFT → DPO）
+- [ ] LIBERO 数据集预处理：构建 instruction-image-action 三元组
+- [ ] LoRA 微调训练脚本（rank=16/32 对比实验）
+- [ ] 微调前后 LIBERO 成功率对比评估
+- [ ] DPO 偏好对齐：用 rollout 成功/失败轨迹构造偏好数据
+- [ ] DPO 训练 + 评估闭环
+
+### 主线二：RLHF / RLVR 强化学习优化
+- [ ] Reward Model 设计：基于 LIBERO task success 的 verifiable reward
+- [ ] RLVR 训练流程搭建（PPO / GRPO）
+- [ ] RL 微调前后性能对比（成功率 + 轨迹质量）
+- [ ] 训练稳定性分析（reward curve、KL divergence）
+
+### 主线三：后训练优化与部署
+- [ ] INT8 量化推理加速测试（延迟 & 精度对比）
+- [ ] 结构化剪枝实验（attention head / FFN pruning）
+- [ ] ONNX 导出 + TensorRT 推理加速
 - [ ] 真机部署接口适配
+- [ ] 端侧部署验证（延迟、内存占用、成功率）
+
+### 辅助任务
 - [ ] Rollout 视频整理归档
+- [ ] 各阶段实验日志整理
 
 ---
 

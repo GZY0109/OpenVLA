@@ -1,0 +1,50 @@
+# Model weights
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.h5
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.*
+
+# Experiment tracking
+wandb/
+runs/
+lightning_logs/
+.neptune/
+
+# Video
+*.mp4
+*.avi
+*.mov
+
+# Jupyter
+.ipynb_checkpoints/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Raw data
+data/raw/
+
+# Interview prep (private, do not upload)
+interview_prep.md
+
+# Reference repos (cloned separately)
+openvla_official/
+libero_official/
