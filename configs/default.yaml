@@ -4,7 +4,7 @@ model:
   name: "openvla/openvla-7b"
   cache_dir: "/home/users/ntu/zuyu001/.cache/huggingface"
   torch_dtype: "bfloat16"
-  attn_implementation: "flash_attention_2"
+  attn_implementation: "sdpa"
 
 action:
   dim: 7                # 7-DoF: dx, dy, dz, drx, dry, drz, gripper
