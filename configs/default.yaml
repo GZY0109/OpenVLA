@@ -1,0 +1,74 @@
+# OpenVLA Project Configuration
+
+model:
+  name: "openvla/openvla-7b"
+  cache_dir: "/home/users/ntu/zuyu001/.cache/huggingface"
+  torch_dtype: "bfloat16"
+  attn_implementation: "flash_attention_2"
+
+action:
+  dim: 7                # 7-DoF: dx, dy, dz, drx, dry, drz, gripper
+  n_bins: 256           # action discretization bins
+  unnorm_key: "libero_object_no_noops"
+
+lora:
+  rank: 16
+  alpha: 32
+  target_modules: ["q_proj", "v_proj"]
+  dropout: 0.05
+
+training:
+  learning_rate: 2.0e-4
+  batch_size: 8
+  max_epochs: 5
+  warmup_ratio: 0.03
+  weight_decay: 0.0
+  gradient_accumulation_steps: 4
+  max_grad_norm: 1.0
+  save_steps: 500
+
+dpo:
+  beta: 0.2
+  learning_rate: 5.0e-5
+  max_epochs: 3
+
+rlvr:
+  algorithm: "grpo"       # grpo | ppo | reinforce
+  group_size: 8
+  kl_coeff: 0.1
+  learning_rate: 1.0e-5
+  max_epochs: 3
+  reward_weights:
+    task_success: 10.0
+    progress: 2.0
+    safety_penalty: -0.5
+
+quantization:
+  method: "dynamic"       # dynamic | static
+  dtype: "int8"
+  sensitive_layers: ["action_head"]  # keep FP16
+
+pruning:
+  method: "taylor"        # taylor | entropy
+  target_sparsity: 0.25
+  recovery_epochs: 2
+
+export:
+  onnx_opset: 17
+  trt_precision: "fp16"
+
+libero:
+  task_suites: ["libero_object", "libero_goal", "libero_spatial", "libero_long"]
+  n_episodes: 20
+  max_steps: 300
+  image_size: [256, 256]
+
+yolo:
+  model: "yolov8n.pt"
+  confidence_threshold: 0.5
+  device: "cuda:0"
+
+device: "cuda:0"
+seed: 42
+output_dir: "./outputs"
+log_dir: "./logs"
