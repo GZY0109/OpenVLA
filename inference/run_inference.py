@@ -44,14 +44,12 @@ def predict_action(model, processor, image: Image.Image, instruction: str, cfg: 
     inputs = processor(prompt, image).to(cfg["device"], dtype=torch.bfloat16)
 
     with torch.no_grad():
-        action_ids = model.predict_action_token_ids(inputs, max_new_tokens=cfg["action"]["dim"])
-
-    action = processor.decode_action(
-        action_ids,
-        n_action_bins=cfg["action"]["n_bins"],
-        unnorm_key=cfg["action"]["unnorm_key"],
-    )
-    return action.tolist()
+        action = model.predict_action(
+            **inputs,
+            unnorm_key=cfg["action"]["unnorm_key"],
+            do_sample=False,
+        )
+    return action.tolist() if hasattr(action, "tolist") else list(action)
 
 
 def benchmark_latency(model, processor, cfg: dict, n_iters: int = 20):
@@ -61,13 +59,15 @@ def benchmark_latency(model, processor, cfg: dict, n_iters: int = 20):
     # warmup
     for _ in range(3):
         predict_action(model, processor, dummy_image, instruction, cfg)
-    torch.cuda.synchronize()
+    if str(cfg["device"]).startswith("cuda"):
+        torch.cuda.synchronize()
 
     latencies = []
     for _ in range(n_iters):
         t0 = time.perf_counter()
         predict_action(model, processor, dummy_image, instruction, cfg)
-        torch.cuda.synchronize()
+        if str(cfg["device"]).startswith("cuda"):
+            torch.cuda.synchronize()
         latencies.append((time.perf_counter() - t0) * 1000)
 
     avg = sum(latencies) / len(latencies)
